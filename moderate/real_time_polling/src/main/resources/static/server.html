@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Live Voting</h2>
+<button onclick="vote('OptionA')">Vote A</button>
+<button onclick="vote('OptionB')">Vote B</button>
+<pre id="output"></pre>
+
+<script>
+    const ws = new WebSocket("ws://localhost:8080/poll");
+
+    ws.onmessage = (event) => {
+        document.getElementById("output").textContent = event.data;
+    };
+
+    function vote(option) {
+        ws.send(option);
+    }
+</script>
+</body>
+</html>
