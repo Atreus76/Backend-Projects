@@ -11,34 +11,23 @@ import java.io.StringReader;
 
 public class VoteTallyDecoder implements Decoder.Text<VoteTally> {
     @Override
-    public VoteTally decode(String jsonMessage) throws DecodeException {
-        try (JsonReader reader = Json.createReader(new StringReader(jsonMessage))) {
-            JsonObject jsonObject = reader.readObject();
+    public VoteTally decode(String s) throws DecodeException {
+        JsonObject json = Json.createReader(new java.io.StringReader(s)).readObject();
+        return new VoteTally(json.getInt("optionA"), json.getInt("optionB"));
+    }
 
-            int optionA = jsonObject.getInt("optionA", 0);
-            int optionB = jsonObject.getInt("optionB", 0);
-
-            return new VoteTally(optionA, optionB);
+    @Override
+    public boolean willDecode(String s) {
+        try {
+            Json.createReader(new java.io.StringReader(s)).readObject();
+            return true;
         } catch (Exception e) {
-            throw new DecodeException(jsonMessage, "Failed to decode JSON into VoteTally", e);
+            return false;
         }
     }
 
     @Override
-    public boolean willDecode(String jsonMessage) {
-        try (JsonReader reader = Json.createReader(new StringReader(jsonMessage))) {
-            JsonObject obj = reader.readObject();
-            return obj.containsKey("optionA") && obj.containsKey("optionB");
-        } catch (Exception e) {
-            return false; // Not valid JSON
-        }
-    }
-
+    public void init(EndpointConfig config) {}
     @Override
-    public void init(EndpointConfig endpointConfig) {
-    }
-
-    @Override
-    public void destroy() {
-    }
+    public void destroy() {}
 }
