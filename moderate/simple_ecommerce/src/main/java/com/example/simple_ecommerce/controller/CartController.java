@@ -28,6 +28,12 @@ public class CartController {
         return ResponseEntity.ok(cartService.checkout(authentication.getName(), request.getStripeToken()));
     }
 
+    @DeleteMapping("/remove")
+    public ResponseEntity<Void>  removeFromCart(@RequestParam Long cartItemId, Authentication authentication){
+        cartService.removeFromCart(authentication.getName(), cartItemId);
+        return ResponseEntity.noContent().build();
+    }
+
     static class CartRequest {
         private Long productId;
         private int quantity;

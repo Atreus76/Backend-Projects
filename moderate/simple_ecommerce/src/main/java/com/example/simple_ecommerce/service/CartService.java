@@ -88,4 +88,22 @@ public class CartService {
             throw new RuntimeException("Payment failed: " + e.getMessage());
         }
     }
+
+    public void removeFromCart(String username, Long cartItemId){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+        if (!cartItem.getCart().getId().equals(cart.getId())){
+            throw new RuntimeException("Cart item does not belong to this user's cart");
+        }
+
+        Product product = cartItem.getProduct();
+        product.setStock(product.getStock() + cartItem.getQuantity());
+        productRepository.save(product);
+        cart.getItems().remove(cartItem);
+        cartRepository.save(cart);
+    }
 }
